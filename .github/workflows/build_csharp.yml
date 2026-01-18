@@ -1,0 +1,29 @@
+name: Build C# Chatbot
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Publish Single EXE
+      # This command creates a self-contained single .exe file
+      run: dotnet publish Chatbot.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+
+    - name: Upload EXE
+      uses: actions/upload-artifact@v4
+      with:
+        name: Chatbot-App
+        path: ./publish/Chatbot.exe
